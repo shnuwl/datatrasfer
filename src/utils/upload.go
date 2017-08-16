@@ -19,7 +19,7 @@ var svc *s3.S3
 
 func init() {
 	sess, _ = session.NewSession(&aws.Config{
-		Region:      aws.String("cn-north-1"),
+		Region:      aws.String("region"),
 		Credentials: credentials.NewStaticCredentials("key_id", "access_key", ""),
 	})
 	svc = s3.New(sess, aws.NewConfig().
