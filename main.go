@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/Shopify/sarama"
 	cluster "github.com/bsm/sarama-cluster"
 	"log"
@@ -35,16 +34,6 @@ func main() {
 	pending := make(map[string][]string)
 	t := time.Tick(5 * time.Second)
 
-	go func() {
-		for now := range t {
-			_ = now
-			utils.Commit_to_s3(&pending)
-			fmt.Println(len(pending))
-			pending = make(map[string][]string)
-			fmt.Println(len(pending))
-		}
-	}()
-
 	// consume messages, watch errors and notifications
 	for {
 		select {
@@ -57,6 +46,9 @@ func main() {
 				utils.Process_file(data, pending)
 				consumer.MarkOffset(msg, "") // mark message as processed
 			}
+		case <-t:
+			utils.Commit_to_s3(&pending)
+			pending = make(map[string][]string)
 		case err, more := <-consumer.Errors():
 			if more {
 				log.Printf("Error: %s\n", err.Error())
