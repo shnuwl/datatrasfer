@@ -7,7 +7,7 @@ func Merge(x []string, y []string) (slice []string) {
 	default:
 		slice = make([]string, len(x)+len(y))
 		copy(slice, x)
-		copy(slice[len(y):], y)
+		copy(slice[len(x):], y)
 		return slice
 	}
 }
