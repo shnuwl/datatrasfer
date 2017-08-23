@@ -6,7 +6,20 @@ import (
 	"compress/gzip"
 	"strconv"
 	"strings"
+        "bytes"
 )
+
+func Gzip(data []byte) []byte {
+    var res bytes.Buffer
+    gz, _ := gzip.NewWriterLevel(&res, 7)
+    _, err := gz.Write(data)
+    if err != nil {
+        panic(err)
+    } else {
+        gz.Close()
+    }
+    return res.Bytes()
+}
 
 func Extract_File(fr string) (r map[string][]byte) {
 	r = make(map[string][]byte)
@@ -40,6 +53,7 @@ func Extract_File(fr string) (r map[string][]byte) {
 
 func Process_file(data map[string][]byte, pending map[string][]string) {
 	for key := range data {
+                var datanum = 0
 		content := string(data[key])
 		fields := strings.Split(content, "\n")
 		seq := make([]string, len(fields))
@@ -50,8 +64,10 @@ func Process_file(data map[string][]byte, pending map[string][]string) {
 		for i, v := range fields {
 			if v != "" {
 				seq[i] = mac + ", " + v
+                                datanum++
 			}
 		}
+                seq = seq[:datanum]
 		_stamp, err := strconv.Atoi(stamp[10:12])
 		if err != nil {
 			continue
@@ -73,4 +89,5 @@ func Process_file(data map[string][]byte, pending map[string][]string) {
 			pending[key] = seq
 		}
 	}
+        pending = make(map[string][]string)
 }
